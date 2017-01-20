@@ -35,7 +35,7 @@ This script works for all form datatypes that I've encountered in the surveys I 
 
 Support for OAuth2 is largely done. (The remaining issue is that the token POST request made after the redirect returns a 405 rather than an access token.) I haven't gotten around to fixing this, but if you feel like playing around with it, you will need to do the following setup:
 
-1. Edit KOBO_AUTHENTICATION_METHOD in Main.gs, setting it to 'oauth2'
+1. Edit KOBO_AUTHENTICATION_METHOD in Main.gs, setting it to "oauth2"
 1. In your google script project:
   * In Resources->Libraries, find library 1B7FSrk5Zi6L1rSxxTDgDEUsPzlukDsi4KGuTMorsTQHhGBzBkMun4iDF (this is the Oauth2 library), and add the latest version
   * In File->Project Properties, copy the value of SCRIPT_ID, which will be used below
