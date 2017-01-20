@@ -1,2 +1,47 @@
 # KoboToolbox-GoogleApps-Scripts
-Google apps scripts for pulling data from KoboToolbox into a Google sheet
+
+This project demonstrates how to set up a Google Sheet that can pull data directly from KoboToolbox using the Kobo API.
+
+## Known Issues
+
+1. KoboToolbox supports both token-based and OAuth2 authentication; OAuth2 support in this project is not working yet.
+
+## Installation
+
+1. Copy all files in the src/ folder into a Google Apps Script project that is attached to a Google sheet
+2. Edit KOBO_BASE_URL in Main.gs, setting it to:
+  * `https://kc.humanitarianresponse.info` (for humanitarian organizations)
+  * `https://kc.kobotoolbox.org` (for everyone else)
+3. Log into your KoboToolbox account, then go to `KOBO_BASE_URL/<username>/api-token` and copy the developer API token, then paste it into the value of KOBO_TOKEN in KoboToolboxToken.gs
+
+## Running the Script
+
+1. Reload your google sheets document
+2. If the document does not have any empty sheets, add one
+3. In the KoboToolbox menu, select "Import KoboToolbox Data"
+4. Check one or more surveys to import (all selected surveys must have the same field structure or you will get an error)
+5. In the sheet dropdown menu, select one of the empty sheets in your document
+6. Click import
+
+The end result should be a sheet with the same data as would appear in an Excel file exported from KoboToolbox.
+
+Once you have a sheet that contains survey data, you can run this procedure again to re-import the surveys, and only rows that don't yet exist in the sheet will be imported. The `_id` field is used as the unique row identifier; to change this, you can edit the value of KOBO_PK_FIELD.
+
+The developer API token is hard-coded in a script file for the purposes of this demo. In production code, you would probably want to obtain the value in some other way (e.g. prompt the user for it).
+
+This script works for all form datatypes that I've encountered in the surveys I have access to; however there are probably other datatypes that would need to be added to the script.
+
+## Using OAuth2
+
+Support for OAuth2 is largely done. (The remaining issue is that the token POST request made after the redirect returns a 405 rather than an access token.) I haven't gotten around to fixing this, but if you feel like playing around with it, you will need to do the following setup:
+
+1. Edit KOBO_AUTHENTICATION_METHOD in Main.gs, setting it to 'oauth2'
+1. In your google script project:
+  * In Resources->Libraries, find library 1B7FSrk5Zi6L1rSxxTDgDEUsPzlukDsi4KGuTMorsTQHhGBzBkMun4iDF (this is the Oauth2 library), and add the latest version
+  * In File->Project Properties, copy the value of SCRIPT_ID, which will be used below
+2. Go to `KOBO_BASE_URL/o/applications/register/` to register your script and fill in the fields as follows:
+  * Name: choose any unique application name
+  * Client type: Confidential
+  * Authorization grant type: Authorization code
+  * Redirect URIs: `https://script.google.com/macros/d/<SCRIPT_ID>/usercallback`
+3. After registering the script, copy the values of the KOBO_CLIENT_ID and KOBO_CLIENT_SECRET, and paste them into KoboToolboxOAuth2.gs

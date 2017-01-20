@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>  
+  <head>
+    <!-- Include the Google CSS package -->
+    <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css"/>
+    <script>
+      function importDataLocal() {
+        document.getElementById('importDataButton').disabled = true;
+        document.getElementById('importDataButton').value = "Uploading...";
+        document.getElementById('output').innerHTML = '';
+        
+        var form = document.getElementById('importdataform');
+        var sheet = document.getElementById('sheetselect').value;
+        var surveys = [];
+        for (var i = 0; i < form.elements.length; i++) {
+          if (form.elements[i].name.startsWith('checkbox_') && form.elements[i].checked) {
+            surveys.push({ 'id': form.elements[i].id, 'name': form.elements[i].value });
+          }
+        }
+        google.script.run
+            .withSuccessHandler(importDone)
+            .withFailureHandler(error)
+            .importData(sheet, surveys);
+        return false;
+      }
+      function importDone(status) {
+        document.getElementById('importdataform').reset();
+        document.getElementById('output').innerHTML = status;
+        document.getElementById('importDataButton').value = "Import Survey Data";
+        document.getElementById('importDataButton').disabled = false;
+      }
+      function error(error, user) {
+        alert('ERROR: ' + error + '; user: ' + user);
+      }
+    </script>
+    <style>
+      body {
+        margin: 10px;
+        padding: 10px;
+      }
+      .submitDiv {
+        text-align: center;
+      }
+    </style>
+    <base target="_top">
+  </head>
+  <body>
+    <form id="importdataform">
+      <strong>Select the survey(s) to import:</strong>
+      <br/>
+      <!-- Create checkboxes with unique ids for each survey -->
+      <? var surveys = getSurveys(); ?>
+      <? for (var i = 0; i < surveys.length; i++) { ?>
+        <label>
+          <input type="checkbox" name="checkbox_<?= surveys[i]['id'] ?>" id="<?= surveys[i]['id'] ?>" value="<?= surveys[i]['name'] ?>"><?= surveys[i]['name'] ?>
+        </label>
+        <br/>
+      <? } ?>
+      <br/>
+      <strong>Import data into which sheet?</strong>
+      <br/>
+      <!-- Create a dropdown input for user to select the target sheet -->
+      <? var sheets = getSheets(); ?>
+      <select id="sheetselect">
+        <? for (var i = 0; i < sheets.length; i++) { ?>
+          <option value="<?= sheets[i] ?>"><?= sheets[i] ?></option>
+        <? } ?>
+      </select>
+      <br/>
+      <br/>
+      <div class="submitDiv">
+        <input type="submit" id="importDataButton" value="Import Survey Data" 
+               onclick="importDataLocal();return false;">
+      </div>
+      <br/>
+    </form>
+
+    <!-- Here the results of the form submission will be displayed -->
+    <div id="output"></div>
+  </body>
+</html>
