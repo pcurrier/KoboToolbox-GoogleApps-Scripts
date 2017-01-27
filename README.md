@@ -1,6 +1,6 @@
 # KoboToolbox-GoogleApps-Scripts
 
-This project demonstrates how to set up a Google Sheet that can pull data directly from KoboToolbox using the Kobo API.
+This project demonstrates how to set up a Google Spreadsheet to pull data directly from KoboToolbox using the Kobo API. The demo code populates a sheet in the spreadsheet with data that should exactly match the contents of an Excel file exported from KoboToolbox.
 
 ## Known Issues
 
@@ -33,7 +33,7 @@ This script works for all form datatypes that I've encountered in the surveys I 
 
 ## Using OAuth2
 
-Support for OAuth2 is largely done. (The remaining issue is that the token POST request made after the redirect returns a 405 rather than an access token.) I haven't gotten around to fixing this, but if you feel like playing around with it, you will need to do the following setup:
+Support for OAuth2 is a work in progress. (Current issue is that the token POST request made after the redirect returns a 405 rather than an access token.) I haven't gotten around to finishing this, but if you feel like playing around with it, you will need to do the following setup:
 
 1. Edit KOBO_AUTHENTICATION_METHOD in Main.gs, setting it to "oauth2"
 1. In your google script project:
