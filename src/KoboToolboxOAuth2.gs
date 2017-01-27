@@ -1,6 +1,3 @@
-var KOBO_CLIENT_ID;
-var KOBO_CLIENT_SECRET;
-
 var KoboToolboxOAuth2;
 
 /**
@@ -8,10 +5,10 @@ var KoboToolboxOAuth2;
  * Based on the samples in https://github.com/googlesamples/apps-script-oauth2
  */
 function initKoboToolboxOAuth2() {
-  KOBO_CLIENT_ID = 'put your client_id here';
-  KOBO_CLIENT_SECRET = 'put your client_secret here';
-  
   KoboToolboxOAuth2 = {
+    KOBO_CLIENT_ID: 'put your client_id here',
+    KOBO_CLIENT_SECRET: 'put your client_secret here',
+    
     /**
      * Authorizes and makes a GET request to the KoboToolbox API.
      */
@@ -57,8 +54,8 @@ function initKoboToolboxOAuth2() {
           .setTokenFormat(OAuth2.TOKEN_FORMAT.FORM_URL_ENCODED)
     
           // Set the client ID and secret.
-          .setClientId(KOBO_CLIENT_ID)
-          .setClientSecret(KOBO_CLIENT_SECRET)
+          .setClientId(this.KOBO_CLIENT_ID)
+          .setClientSecret(this.KOBO_CLIENT_SECRET)
     
           // Set the name of the callback function that should be invoked to complete
           // the OAuth flow.
@@ -67,7 +64,7 @@ function initKoboToolboxOAuth2() {
           //.setTokenPayloadHandler(KoboOAuth2AddContentType)
     
           .setTokenHeaders({
-            'Authorization': 'Basic ' + Utilities.base64Encode(KOBO_CLIENT_ID + ':' + KOBO_CLIENT_SECRET)
+            'Authorization': 'Basic ' + Utilities.base64Encode(this.KOBO_CLIENT_ID + ':' + this.KOBO_CLIENT_SECRET)
           })
     
           // Set the property store where authorized tokens should be persisted.
