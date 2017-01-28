@@ -52,7 +52,7 @@
       <? var surveys = getSurveys(); ?>
       <? for (var i = 0; i < surveys.length; i++) { ?>
         <label>
-          <input type="checkbox" name="checkbox_<?= surveys[i]['id'] ?>" id="<?= surveys[i]['id'] ?>" value="<?= surveys[i]['name'] ?>"><?= surveys[i]['name'] ?>
+          <input type="checkbox" name="checkbox_<?= surveys[i]['id'] ?>" id="<?= surveys[i]['id'] ?>" value="<?= surveys[i]['name'] ?>"><?= surveys[i]['name'] + ' (' + surveys[i]['id'] + ')' ?>
         </label>
         <br/>
       <? } ?>
