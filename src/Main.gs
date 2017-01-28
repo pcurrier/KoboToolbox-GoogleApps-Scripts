@@ -20,7 +20,8 @@ var KOBO_AUTHENTICATION_METHOD = 'token';
 function onOpen() {
   var ui = SpreadsheetApp.getUi();
   ui.createMenu('KoboToolbox')
-      .addItem('Import KoboToolbox Data', 'importDataMenuItem')
+      .addItem('Import KoboToolbox Data into Sheet', 'importDataMenuItem')
+      .addItem('Upload Sheet Data to KoboToolbox Survey', 'uploadDataMenuItem')
       .addToUi();
 }
 
@@ -29,6 +30,13 @@ function importDataMenuItem() {
   var template = HtmlService.createTemplateFromFile('ImportForm.html');
   var html = template.evaluate().setHeight(400);
   SpreadsheetApp.getUi().showModalDialog(html, 'Import survey data from KoboToolbox');
+}
+
+// Creates upload dialog box
+function uploadDataMenuItem() {
+  var template = HtmlService.createTemplateFromFile('UploadForm.html');
+  var html = template.evaluate();
+  SpreadsheetApp.getUi().showModalDialog(html, 'Upload Sheet Data to KoboToolbox');
 }
 
 // Called by the submit button on InputForm: imports one or more Kobo surveys into the specified sheet
@@ -60,6 +68,29 @@ function importData(sheetName, surveys) {
   }
   SpreadsheetApp.flush();
   lock.releaseLock();
+  return returnString;
+}
+
+// Called by the submit button on UploadForm: uploads a sheet's data into the specified survey
+function uploadData(sheetName, surveyId) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
+  var sheetMetadata = getSheetMetadata(sheet);
+  if (!sheetMetadata) {
+    return 'ERROR: Target sheet ' + sheetName + ' does not contain index field: ' + KOBO_PK_FIELD;
+  }
+  
+  var returnString = '';
+  var rowCount = 0;
+  var survey = new Survey(surveyId);
+  var rowsUploaded = survey.upload(sheet, sheetMetadata);
+  if (rowsUploaded < 0) {
+    returnString = 'ERROR: Sheet ' + sheetName + ' could not be uploaded into survey ' + surveyId + '. Check that sheet and survey have identical field structures.';
+  }
+  rowCount += rowsUploaded;
+  
+  if (!returnString) {
+    returnString = 'Uploaded sheet containing ' + rowCount + ' new rows.';
+  }
   return returnString;
 }
 

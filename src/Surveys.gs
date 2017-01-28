@@ -43,6 +43,39 @@ Survey.prototype = {
     return count;
   },
   
+  // Upload a sheet's data to the survey
+  upload: function(sheet, sheetMetadata) {
+    if (!this.matchesSheet(sheetMetadata)) {
+      return -1;
+    }
+        
+    // Add header row
+    var csvData = this.fields.map(function(x){ return '"' + x['name'] + '"'; }).join(',') + "\r\n";
+    
+    var dataValues = sheet.getDataRange().getValues();
+    var numRows = dataValues.length;
+    for (var i = 1; i < numRows; i++) {
+      var row = '';
+      var numCols = dataValues[i].length;
+      for (var j = 0; j < numCols; j++) {
+        if (j > 0) {
+          row += ',';
+        }
+        row += '"' + dataValues[i][j] + '"';
+      }
+      row += "\r\n";
+      csvData += row;
+    }
+    
+    var count = 0;
+    var response = KoboUpload(KOBO_BASE_URL + '/api/v1/forms/' + this.id + '/csv_import', csvData);
+    if (response['additions']) {
+      count = response['additions'];
+    }
+    
+    return count;
+  },
+  
   // Takes the JSON survey row representation and creates an array representation for the google sheet
   surveyRowToSheetRow: function(jsonRow) {
     var row = [];

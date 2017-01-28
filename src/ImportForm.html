@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html>  
+<html>
+  <!-- Form for importing a KoboToolbox survey's data into a sheet -->
   <head>
     <!-- Include the Google CSS package -->
     <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css"/>
@@ -31,6 +32,7 @@
       }
       function error(error, user) {
         alert('ERROR: ' + error + '; user: ' + user);
+        importDone(status);
       }
     </script>
     <style>

@@ -9,16 +9,17 @@ function initKoboToolboxBasic() {
     KOBO_PASSWORD: 'put your password here',
     
     /**
+     * Returns the authorization string for this auth method.
+     */
+    getAuthString: function() {
+      return 'Basic ' + Utilities.base64Encode(this.KOBO_USER + ':' + this.KOBO_PASSWORD);
+    },
+    
+    /**
      * Makes a GET request to the KoboToolbox API.
      */
     get: function(url) {
-      var response = UrlFetchApp.fetch(url, {
-        method: 'get',
-        headers: {
-          Authorization: 'Basic ' + Utilities.base64Encode(this.KOBO_USER + ':' + this.KOBO_PASSWORD)
-        }
-      });
-      return JSON.parse(response.getContentText());
+      return KoboGet_(url, this.getAuthString());
     }
   };
 }

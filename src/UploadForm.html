@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+  <!-- Form for uploading a sheet's data to a KoboToolbox survey -->
+  <head>
+    <!-- Include the Google CSS package -->
+    <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css"/>
+    <script>
+      function uploadDataLocal() {
+        document.getElementById('uploadDataButton').disabled = true;
+        document.getElementById('uploadDataButton').value = "Uploading...";
+        document.getElementById('output').innerHTML = '';
+        
+        var form = document.getElementById('uploaddataform');
+        var sheet = document.getElementById('sheetselect').value;
+        var survey = document.getElementById('surveyselect').value;
+        google.script.run
+            .withSuccessHandler(uploadDone)
+            .withFailureHandler(error)
+            .uploadData(sheet, survey);
+        return false;
+      }
+      function uploadDone(status) {
+        document.getElementById('uploaddataform').reset();
+        document.getElementById('output').innerHTML = status;
+        document.getElementById('uploadDataButton').value = "Upload Survey Data";
+        document.getElementById('uploadDataButton').disabled = false;
+      }
+      function error(error, user) {
+        alert('ERROR: ' + error + '; user: ' + user);
+        uploadDone(status);
+      }
+    </script>
+    <style>
+      body {
+        margin: 10px;
+        padding: 10px;
+      }
+      .submitDiv {
+        text-align: center;
+      }
+    </style>
+    <base target="_top">
+  </head>
+  <body>
+    <form id="uploaddataform">
+      <strong>Upload data from which sheet?</strong>
+      <br/>
+      <!-- Create a dropdown input for user to select the source sheet -->
+      <? var sheets = getSheets(); ?>
+      <select id="sheetselect">
+        <? for (var i = 0; i < sheets.length; i++) { ?>
+          <option value="<?= sheets[i] ?>"><?= sheets[i] ?></option>
+        <? } ?>
+      </select>
+      <br/>
+      <br/>
+      <strong>Select the destination Kobo survey:</strong>
+      <br/>
+      <!-- Create a dropdown input for user to select the destination survey -->
+      <? var surveys = getSurveys(); ?>
+      <select id="surveyselect">
+        <? for (var i = 0; i < surveys.length; i++) { ?>
+          <option value="<?= surveys[i]['id'] ?>"><?= surveys[i]['name'] + ' (' + surveys[i]['id'] + ')' ?></option>
+        <? } ?>
+      </select>
+      <br/>
+      <br/>
+      <div class="submitDiv">
+        <input type="submit" id="uploadDataButton" value="Upload Survey Data" 
+               onclick="uploadDataLocal();return false;">
+      </div>
+      <br/>
+    </form>
+
+    <!-- Here the results of the form submission will be displayed -->
+    <div id="output"></div>
+  </body>
+</html>

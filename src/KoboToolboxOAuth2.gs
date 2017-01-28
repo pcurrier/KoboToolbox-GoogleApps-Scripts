@@ -9,19 +9,22 @@ function initKoboToolboxOAuth2() {
     KOBO_CLIENT_ID: 'put your client_id here',
     KOBO_CLIENT_SECRET: 'put your client_secret here',
     
+    accessToken: null,
+    
+    /**
+     * Returns the authorization string for this auth method.
+     */
+    getAuthString: function() {
+      return 'Bearer ' + this.accessToken;
+    },
+    
     /**
      * Authorizes and makes a GET request to the KoboToolbox API.
      */
     get: function(url) {
       var service = this.getService();
       if (service.hasAccess()) {
-        var response = UrlFetchApp.fetch(url, {
-          method: 'get',
-          headers: {
-            Authorization: 'Bearer ' + service.getAccessToken()
-          }
-        });
-        var result = JSON.parse(response.getContentText());
+        var result = KoboGet_(url, 'Bearer ' + service.getAccessToken());
         //Logger.log(JSON.stringify(result, null, 2));
         return result;
       } else {

@@ -8,16 +8,17 @@ function initKoboToolboxToken() {
     KOBO_TOKEN: 'put your developer API token here',
     
     /**
+     * Returns the authorization string for this auth method.
+     */
+    getAuthString: function() {
+      return 'Token ' + this.KOBO_TOKEN;
+    },
+    
+    /**
      * Makes a GET request to the KoboToolbox API.
      */
     get: function(url) {
-      var response = UrlFetchApp.fetch(url, {
-        method: 'get',
-        headers: {
-          Authorization: 'Token ' + this.KOBO_TOKEN
-        }
-      });
-      return JSON.parse(response.getContentText());
+      return KoboGet_(url, this.getAuthString());
     }
   };
 }
