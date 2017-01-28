@@ -7,6 +7,8 @@ function KoboInit(authType) {
     KoboToolbox = KoboToolboxToken;
   } else if (authType == 'oauth2') {
     KoboToolbox = KoboToolboxOAuth2;
+  } else if (authType == 'basic') {
+    KoboToolbox = KoboToolboxBasic;
   }
 }
 

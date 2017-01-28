@@ -4,15 +4,18 @@ This project demonstrates how to set up a Google Spreadsheet to pull data direct
 
 ## Known Issues
 
-1. KoboToolbox supports both token-based and OAuth2 authentication; OAuth2 support in this project is not working yet.
+1. Support for OAuth2 authentication is not finished yet.
 
 ## Installation
 
 1. Copy all files in the src/ folder into a Google Apps Script project that is attached to a Google sheet
-2. Edit KOBO_BASE_URL in Main.gs, setting it to:
-  * `https://kc.humanitarianresponse.info` (for humanitarian organizations)
-  * `https://kc.kobotoolbox.org` (for everyone else)
-3. Log into your KoboToolbox account, then go to `KOBO_BASE_URL/<username>/api-token` and copy the developer API token, then paste it into the value of KOBO_TOKEN in KoboToolboxToken.gs
+2. Edit KOBO_BASE_URL in Main.gs, setting it to either:
+  * Humanitarian organizations: `https://kc.humanitarianresponse.info`
+  * Everyone else: `https://kc.kobotoolbox.org`
+3. Pick an authentication method:
+  * Token-based authentication: Log into your KoboToolbox account, then go to `KOBO_BASE_URL/<username>/api-token` and copy the developer API token, then paste it into the value of KOBO_TOKEN in KoboToolboxToken.gs
+  * Basic authentication: edit the values of KOBO_USER/KOBO_PASSWORD in KoboToolboxBasic.gs (not recommended, better to use token-based)
+  * Set KOBO_AUTHENTICATION_METHOD in Main.gs to "token" or "basic" depending on your choice
 
 ## Running the Script
 
@@ -27,9 +30,9 @@ The end result should be a sheet with the same data as would appear in an Excel 
 
 Once you have a sheet that contains survey data, you can run this procedure again to re-import the surveys, and only rows that don't yet exist in the sheet will be imported. The `_id` field is used as the unique row identifier; to change this, you can edit the value of KOBO_PK_FIELD.
 
-The developer API token is hard-coded in a script file for the purposes of this demo. In production code, you would probably want to obtain the value in some other way (e.g. prompt the user for it).
+The developer API token (or the username/password if you choose basic authentication) is hard-coded in a script file for the purposes of this demo. In production code, you would probably want to obtain the value in some other way (e.g. prompt the user for it).
 
-This script works for all form datatypes that I've encountered in the surveys I have access to; however there are probably other datatypes that would need to be added to the script.
+This script works for all form datatypes that I've encountered in the surveys I have access to; however there are probably other datatypes for which support will need to be added.
 
 ## Using OAuth2
 
