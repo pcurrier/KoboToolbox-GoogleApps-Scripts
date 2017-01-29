@@ -49,8 +49,11 @@ Survey.prototype = {
       return -1;
     }
         
+    var regex = /"/g;
+    var quote = function(s) { return '"' + s.replace(regex, '""') + '"'; };
+    
     // Add header row
-    var csvData = this.fields.map(function(x){ return '"' + x['name'] + '"'; }).join(',') + "\r\n";
+    var csvData = this.fields.map(function(x){ return quote(x['name']); }).join(',') + "\r\n";
     
     var dataValues = sheet.getDataRange().getValues();
     var numRows = dataValues.length;
@@ -61,7 +64,7 @@ Survey.prototype = {
         if (j > 0) {
           row += ',';
         }
-        row += '"' + dataValues[i][j] + '"';
+        row += quote(dataValues[i][j].toString());
       }
       row += "\r\n";
       csvData += row;
