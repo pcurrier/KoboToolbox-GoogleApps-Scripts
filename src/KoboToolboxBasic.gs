@@ -1,18 +1,23 @@
 var KoboToolboxBasic;
 
 /**
- * Token-based authentication for KoboToolbox
+ * Basic authentication for KoboToolbox
  */
 function initKoboToolboxBasic() {
   KoboToolboxBasic = {
-    KOBO_USER: 'put your username here',
-    KOBO_PASSWORD: 'put your password here',
+    /**
+     * Initializes the object.
+     */
+    init: function(config) {
+      this.config = config;
+      return this;
+    },
     
     /**
      * Returns the authorization string for this auth method.
      */
     getAuthString: function() {
-      return 'Basic ' + Utilities.base64Encode(this.KOBO_USER + ':' + this.KOBO_PASSWORD);
+      return 'Basic ' + Utilities.base64Encode(this.config.authUser + ':' + this.config.authPassword);
     },
     
     /**

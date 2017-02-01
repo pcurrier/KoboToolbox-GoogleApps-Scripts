@@ -6,10 +6,15 @@ var KoboToolboxOAuth2;
  */
 function initKoboToolboxOAuth2() {
   KoboToolboxOAuth2 = {
-    KOBO_CLIENT_ID: 'put your client_id here',
-    KOBO_CLIENT_SECRET: 'put your client_secret here',
-    
     accessToken: null,
+    
+    /**
+     * Initializes the object.
+     */
+    init: function(config) {
+      this.config = config;
+      return this;
+    },
     
     /**
      * Returns the authorization string for this auth method.
@@ -52,13 +57,13 @@ function initKoboToolboxOAuth2() {
     getService: function() {
       return OAuth2.createService('KoboToolbox')
           // Set the endpoint URLs.
-          .setAuthorizationBaseUrl(KOBO_BASE_URL + '/o/authorize')
-          .setTokenUrl(KOBO_BASE_URL + '/o/token')
+          .setAuthorizationBaseUrl(this.config.baseUrl + '/o/authorize')
+          .setTokenUrl(this.config.baseUrl + '/o/token')
           .setTokenFormat(OAuth2.TOKEN_FORMAT.FORM_URL_ENCODED)
     
           // Set the client ID and secret.
-          .setClientId(this.KOBO_CLIENT_ID)
-          .setClientSecret(this.KOBO_CLIENT_SECRET)
+          .setClientId(this.config.authClientId)
+          .setClientSecret(this.config.authClientSecret)
     
           // Set the name of the callback function that should be invoked to complete
           // the OAuth flow.
@@ -67,7 +72,7 @@ function initKoboToolboxOAuth2() {
           //.setTokenPayloadHandler(KoboOAuth2AddContentType)
     
           .setTokenHeaders({
-            'Authorization': 'Basic ' + Utilities.base64Encode(this.KOBO_CLIENT_ID + ':' + this.KOBO_CLIENT_SECRET)
+            'Authorization': 'Basic ' + Utilities.base64Encode(this.config.authClientId + ':' + this.config.authClientSecret)
           })
     
           // Set the property store where authorized tokens should be persisted.

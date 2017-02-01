@@ -1,6 +1,4 @@
 var KOBO_PK_FIELD = '_id';
-var KOBO_BASE_URL = 'put your base URL here';
-var KOBO_AUTHENTICATION_METHOD = 'token';
 
 // Call all init* functions before we do anything else. This works around google's
 // limitation that we cannot control the load order of the .gs files in the project,
@@ -13,38 +11,58 @@ var KOBO_AUTHENTICATION_METHOD = 'token';
       this[funcName].call(this);
     }
   }
-  KoboInit(KOBO_AUTHENTICATION_METHOD);
 })();
 
-// Initializes authentication method and creates Kobo menu
-function onOpen() {
+// Setup and menu creation
+function KoboSetup(config) {
+  PropertiesService.getScriptProperties().setProperties(config);
+  
   var ui = SpreadsheetApp.getUi();
   ui.createMenu('KoboToolbox')
       .addItem('Import KoboToolbox Data into Sheet', 'importDataMenuItem')
       .addItem('Upload Sheet Data to KoboToolbox Survey', 'uploadDataMenuItem')
+      .addItem('Display Map', 'showMapMenuItem')
       .addToUi();
 }
 
 // Creates import dialog box
 function importDataMenuItem() {
-  var template = HtmlService.createTemplateFromFile('ImportForm.html');
+  var template = populateTemplate(HtmlService.createTemplateFromFile('ImportForm.html'));
   var html = template.evaluate().setHeight(400);
   SpreadsheetApp.getUi().showModalDialog(html, 'Import survey data from KoboToolbox');
 }
 
 // Creates upload dialog box
 function uploadDataMenuItem() {
-  var template = HtmlService.createTemplateFromFile('UploadForm.html');
+  var template = populateTemplate(HtmlService.createTemplateFromFile('UploadForm.html'));
   var html = template.evaluate();
   SpreadsheetApp.getUi().showModalDialog(html, 'Upload Sheet Data to KoboToolbox');
 }
 
+// Pushes sheet/survey lists onto a template
+function populateTemplate(template) {
+  var config = PropertiesService.getScriptProperties().getProperties();
+  var surveyList = KoboGet(config.baseUrl + '/api/v1/data');
+  template.surveys = surveyList.map(function(s){ return { 'id': s['id'], 'name': s['title'], 'url': s['url'] }; });
+  template.sheets = SpreadsheetApp.getActiveSpreadsheet().getSheets().map(function(s){ return s.getName(); });
+  return template;
+}
+
+// Gets the name of the primary key field
+function getPk(config) {
+  if (config.pkField) {
+    return config.pkField;
+  }
+  return KOBO_PK_FIELD;
+}
+
 // Called by the submit button on InputForm: imports one or more Kobo surveys into the specified sheet
 function importData(sheetName, surveys) {
+  var config = PropertiesService.getScriptProperties().getProperties();
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
-  var sheetMetadata = getSheetMetadata(sheet);
+  var sheetMetadata = getSheetMetadata(sheet, config);
   if (!sheetMetadata) {
-    return 'ERROR: Target sheet ' + sheetName + ' does not contain index field: ' + KOBO_PK_FIELD;
+    return 'ERROR: Target sheet ' + sheetName + ' does not contain index field: ' + getPk(config);
   }
   
   // Avoid multiple simultaneous imports
@@ -54,7 +72,7 @@ function importData(sheetName, surveys) {
   var returnString = '';
   var rowCount = 0;
   for (var i = 0; i < surveys.length; i++) {
-    var survey = new Survey(surveys[i]['id']);
+    var survey = new Survey(surveys[i]['id'], config.baseUrl, getPk(config));
     var rowsImported = survey.import(sheet, sheetMetadata);
     if (rowsImported < 0) {
       returnString = 'ERROR: Survey ' + surveys[i]['name'] + ' could not be imported into sheet ' + sheetName + '. Check that sheet and survey have identical field structures.';
@@ -73,15 +91,16 @@ function importData(sheetName, surveys) {
 
 // Called by the submit button on UploadForm: uploads a sheet's data into the specified survey
 function uploadData(sheetName, surveyId) {
+  var config = PropertiesService.getScriptProperties().getProperties();
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
-  var sheetMetadata = getSheetMetadata(sheet);
+  var sheetMetadata = getSheetMetadata(sheet, config);
   if (!sheetMetadata) {
-    return 'ERROR: Target sheet ' + sheetName + ' does not contain index field: ' + KOBO_PK_FIELD;
+    return 'ERROR: Target sheet ' + sheetName + ' does not contain index field: ' + getPk(config);
   }
   
   var returnString = '';
   var rowCount = 0;
-  var survey = new Survey(surveyId);
+  var survey = new Survey(surveyId, config.baseUrl, getPk(config));
   var rowsUploaded = survey.upload(sheet, sheetMetadata);
   if (rowsUploaded < 0) {
     returnString = 'ERROR: Sheet ' + sheetName + ' could not be uploaded into survey ' + surveyId + '. Check that sheet and survey have identical field structures.';
@@ -95,7 +114,7 @@ function uploadData(sheetName, surveyId) {
 }
 
 // Gets metadata (field info and primary key index, mainly) for a sheet
-function getSheetMetadata(sheet) {
+function getSheetMetadata(sheet, config) {
   var metadata = { 'fields': [], 'pkValues': {} };
   if (sheet.getLastColumn() == 0) {
     return metadata;
@@ -103,7 +122,7 @@ function getSheetMetadata(sheet) {
   
   var headerRow = sheet.getRange(1, 1, 1, sheet.getLastColumn());
   metadata['fields'] = headerRow.getValues()[0];
-  metadata['pkIdx'] = metadata['fields'].indexOf(KOBO_PK_FIELD);
+  metadata['pkIdx'] = metadata['fields'].indexOf(getPk(config));
   if (metadata['pkIdx'] < 0) {
     return null;
   }
@@ -115,9 +134,4 @@ function getSheetMetadata(sheet) {
     metadata['pkValues'][values[i][metadata['pkIdx']]] = 1;
   }
   return metadata;
-}
-
-// Returns a list of sheet names
-function getSheets() {
-  return SpreadsheetApp.getActiveSpreadsheet().getSheets().map(function(s){ return s.getName(); });
 }

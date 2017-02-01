@@ -2,8 +2,10 @@ function initSurvey() {
 }
 
 // Constructor for Survey class
-function Survey(surveyId) {
+function Survey(surveyId, baseUrl, pkField) {
   this.id = surveyId;
+  this.baseUrl = baseUrl;
+  this.pkField = pkField;
   this.fields = [];
   this.fieldIndex = {};
   this.data = [];
@@ -71,7 +73,7 @@ Survey.prototype = {
     }
     
     var count = 0;
-    var response = KoboUpload(KOBO_BASE_URL + '/api/v1/forms/' + this.id + '/csv_import', csvData);
+    var response = KoboUpload(this.baseUrl + '/api/v1/forms/' + this.id + '/csv_import', csvData);
     if (response['additions']) {
       count = response['additions'];
     }
@@ -99,13 +101,13 @@ Survey.prototype = {
   
   // Check if an incoming survey row already exists in the sheet
   surveyRowExistsInSheet: function(sheetMetadata, jsonRow) {
-    return jsonRow[KOBO_PK_FIELD] in sheetMetadata['pkValues'];
+    return jsonRow[this.pkField] in sheetMetadata['pkValues'];
   },
   
   // Gets metadata (field list, etc) for a survey.
   // The goal is to have the same fields as we would see in an Excel file export.
   getMetadata: function() {
-    var formInfo = KoboGet(KOBO_BASE_URL + '/api/v1/forms/' + this.id + '/form.json');
+    var formInfo = KoboGet(this.baseUrl + '/api/v1/forms/' + this.id + '/form.json');
     this.title = formInfo['title'];
     this.version = formInfo['version'];
     
@@ -162,12 +164,25 @@ Survey.prototype = {
         for (var cc = 0; cc < ccl; cc++) {
           childNames.push(child['children'][cc]['name']);
         }
-        this.pushField(parentName, fieldCtr++, makeSelectAllFunc(parentName, ccl, childNames));
+        this.pushField(parentName, fieldCtr++, this.makeSelectAllFunc(parentName, ccl, childNames));
         for (var cc = 0; cc < ccl; cc++) {
           this.pushField(parentName + '/' + child['children'][cc]['name'], fieldCtr++);
         }
       }
     }
+  },
+  
+  // Returns closure for getting child values from "select all that apply" field
+  makeSelectAllFunc: function(parentName, childCount, childNames) {
+    return function(jsonRow, jsonValue) {
+      var splitVals = [];
+      if (jsonValue) {
+        splitVals = jsonValue.split(' ');
+      }
+      for (var i = 0; i < childCount; i++) {
+        jsonRow[parentName + '/' + childNames[i]] = (splitVals.indexOf(childNames[i]) >= 0) ? '1' : '0';
+      }
+    };
   },
   
   // Adds a field to the field list
@@ -182,7 +197,7 @@ Survey.prototype = {
   
   // Get the survey response data
   getData: function() {
-    this.data = KoboGet(KOBO_BASE_URL + '/api/v1/data/' + this.id);
+    this.data = KoboGet(this.baseUrl + '/api/v1/data/' + this.id);
     return this.data.length;
   },
   
@@ -192,22 +207,3 @@ Survey.prototype = {
            sheetMetadata['fields'].join('|') == this.fields.map(function(elem) { return elem.name; }).join('|');
   },
 };
-
-// Returns closure for getting child values from "select all that apply" field
-function makeSelectAllFunc(parentName, childCount, childNames) {
-  return function(jsonRow, jsonValue) {
-    var splitVals = [];
-    if (jsonValue) {
-      splitVals = jsonValue.split(' ');
-    }
-    for (var i = 0; i < childCount; i++) {
-      jsonRow[parentName + '/' + childNames[i]] = (splitVals.indexOf(childNames[i]) >= 0) ? '1' : '0';
-    }
-  };
-}
-
-// Gets all the surveys we have defined in our Kobo account
-function getSurveys() {
-  var surveys = KoboGet(KOBO_BASE_URL + '/api/v1/data');
-  return surveys.map(function(s){ return { 'id': s['id'], 'name': s['title'], 'url': s['url'] }; });
-}

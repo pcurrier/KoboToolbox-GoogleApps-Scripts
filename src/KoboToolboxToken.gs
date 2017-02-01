@@ -5,13 +5,19 @@ var KoboToolboxToken;
  */
 function initKoboToolboxToken() {
   KoboToolboxToken = {
-    KOBO_TOKEN: 'put your developer API token here',
+    /**
+     * Initializes the object.
+     */
+    init: function(config) {
+      this.config = config;
+      return this;
+    },
     
     /**
      * Returns the authorization string for this auth method.
      */
     getAuthString: function() {
-      return 'Token ' + this.KOBO_TOKEN;
+      return 'Token ' + this.config.authToken;
     },
     
     /**
