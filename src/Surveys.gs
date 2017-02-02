@@ -120,7 +120,7 @@ Survey.prototype = {
         this.pushField('_uuid', fieldCtr++);
         this.pushField('_submission_time', fieldCtr++);
         this.pushField('_index', fieldCtr++);
-      } else if (['integer','text','date','select one','photo'].indexOf(child['type']) >= 0) {
+      } else if (['integer','text','date','select one','photo','barcode'].indexOf(child['type']) >= 0) {
         // regular scalar values
         this.pushField(child['name'], fieldCtr++);
       } else if (['start','end','username','__version__'].indexOf(child['name']) >= 0) {
