@@ -8,16 +8,27 @@ This project demonstrates how to set up a Google Spreadsheet to sync data with K
 
 ## Installation
 
-1. Copy all files in the src/ folder into a Google Apps Script project that is attached to a Google sheet
-2. Edit KOBO_BASE_URL in Main.gs, setting it to either:
+1. Copy all files in the src/ folder into a Google Apps Script project that is attached to a Google sheet (you do not need to edit these files)
+2. Copy the file demo/Code.gs into the project
+3. Edit the baseUrl configuration parameter in Code.gs, setting it to either:
   * Humanitarian organizations: `https://kc.humanitarianresponse.info`
   * Everyone else: `https://kc.kobotoolbox.org`
-3. Pick an authentication method:
-  * Token-based authentication: Log into your KoboToolbox account, then go to `KOBO_BASE_URL/<username>/api-token` and copy the developer API token, then paste it into the value of KOBO_TOKEN in KoboToolboxToken.gs
-  * Basic authentication: edit the values of KOBO_USER/KOBO_PASSWORD in KoboToolboxBasic.gs (not recommended, better to use token-based)
-  * Set KOBO_AUTHENTICATION_METHOD in Main.gs to "token" or "basic" depending on your choice
+4. Pick an authentication method and follow the appropriate steps below. There are two available:
+  * Token-based authentication
+  * Basic authentication (not recommended, better to use token-based)
 
-The developer API token (or the username/password if you choose basic authentication) is hard-coded in the script for the purposes of this demo. In production code, you would probably want to obtain the value in some other way (e.g. prompt the user for it).
+The developer API token (or the username/password if you choose basic authentication) is hard-coded in Code.gs for the purposes of this demo. In production code, you would probably want to obtain the value in some other way (e.g. prompt the user for it).
+
+### Token-based authentication
+
+1. Make sure the token authentication example is uncommented in Code.gs (this is the default setup); the other examples should be commented out
+2. Log into your KoboToolbox account, then go to `KOBO_BASE_URL/<username>/api-token`
+3. Copy the developer API token, then paste it into the value of the authToken configuration parameter in Code.gs
+
+### Basic authentication
+
+1. Make sure the basic authentication example is uncommented in Code.gs; the other examples should be commented out
+2. Edit the configuration parameters authUser and authPassword, setting them to your username and password
 
 ## Importing Kobo survey data into a Google sheet
 
@@ -54,13 +65,13 @@ NOTE: if you run the upload multiple times using the same sheet/survey, you will
 
 Support for OAuth2 is a work in progress. (Current issue is that the token POST request made after the redirect returns a 405 rather than an access token.) I haven't gotten around to finishing this, but if you feel like playing around with it, you will need to do the following setup:
 
-1. Edit KOBO_AUTHENTICATION_METHOD in Main.gs, setting it to "oauth2"
-1. In your google script project:
+1. Make sure the OAuth2 authentication example is uncommented in Code.gs; the other examples should be commented out
+2. In your google script project:
   * In Resources->Libraries, find library 1B7FSrk5Zi6L1rSxxTDgDEUsPzlukDsi4KGuTMorsTQHhGBzBkMun4iDF (this is the Oauth2 library), and add the latest version
   * In File->Project Properties, copy the value of SCRIPT_ID, which will be used below
-2. Go to `KOBO_BASE_URL/o/applications/register/` to register your script and fill in the fields as follows:
+3. Go to `KOBO_BASE_URL/o/applications/register/` to register your script and fill in the fields as follows:
   * Name: choose any unique application name
   * Client type: Confidential
   * Authorization grant type: Authorization code
   * Redirect URIs: `https://script.google.com/macros/d/<SCRIPT_ID>/usercallback`
-3. After registering the script, copy the values of the KOBO_CLIENT_ID and KOBO_CLIENT_SECRET, and paste them into KoboToolboxOAuth2.gs
+4. After registering the script, copy the values of the KOBO_CLIENT_ID and KOBO_CLIENT_SECRET, and paste them into the values of authClientId and authClientSecret in Code.gs
