@@ -26,8 +26,9 @@
         document.getElementById('uploadDataButton').disabled = false;
       }
       function error(error, user) {
-        alert('ERROR: ' + error + '; user: ' + user);
-        uploadDone(status);
+        var error = 'ERROR: ' + error + '; user: ' + user;
+        alert(error);
+        uploadDone(error);
       }
     </script>
     <style>
@@ -46,10 +47,9 @@
       <strong>Upload data from which sheet?</strong>
       <br/>
       <!-- Create a dropdown input for user to select the source sheet -->
-      <? var sheets = getSheets(); ?>
       <select id="sheetselect">
         <? for (var i = 0; i < sheets.length; i++) { ?>
-          <option value="<?= sheets[i] ?>"><?= sheets[i] ?></option>
+          <option value="<?= sheets[i]['name'] ?>" <?= sheets[i]['isActive'] ? 'selected' : '' ?>><?= sheets[i]['name'] ?></option>
         <? } ?>
       </select>
       <br/>
@@ -57,7 +57,6 @@
       <strong>Select the destination Kobo survey:</strong>
       <br/>
       <!-- Create a dropdown input for user to select the destination survey -->
-      <? var surveys = getSurveys(); ?>
       <select id="surveyselect">
         <? for (var i = 0; i < surveys.length; i++) { ?>
           <option value="<?= surveys[i]['id'] ?>"><?= surveys[i]['name'] + ' (' + surveys[i]['id'] + ')' ?></option>

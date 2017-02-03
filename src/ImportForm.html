@@ -31,8 +31,9 @@
         document.getElementById('importDataButton').disabled = false;
       }
       function error(error, user) {
-        alert('ERROR: ' + error + '; user: ' + user);
-        importDone(status);
+        var error = 'ERROR: ' + error + '; user: ' + user;
+        alert(error);
+        importDone(error);
       }
     </script>
     <style>
@@ -51,7 +52,6 @@
       <strong>Select the survey(s) to import:</strong>
       <br/>
       <!-- Create checkboxes with unique ids for each survey -->
-      <? var surveys = getSurveys(); ?>
       <? for (var i = 0; i < surveys.length; i++) { ?>
         <label>
           <input type="checkbox" name="checkbox_<?= surveys[i]['id'] ?>" id="<?= surveys[i]['id'] ?>" value="<?= surveys[i]['name'] ?>"><?= surveys[i]['name'] + ' (' + surveys[i]['id'] + ')' ?>
@@ -62,10 +62,9 @@
       <strong>Import data into which sheet?</strong>
       <br/>
       <!-- Create a dropdown input for user to select the target sheet -->
-      <? var sheets = getSheets(); ?>
       <select id="sheetselect">
         <? for (var i = 0; i < sheets.length; i++) { ?>
-          <option value="<?= sheets[i] ?>"><?= sheets[i] ?></option>
+          <option value="<?= sheets[i]['name'] ?>" <?= sheets[i]['isActive'] ? 'selected' : '' ?>><?= sheets[i]['name'] ?></option>
         <? } ?>
       </select>
       <br/>

@@ -21,30 +21,35 @@ function KoboSetup(config) {
   ui.createMenu('KoboToolbox')
       .addItem('Import KoboToolbox Data into Sheet', 'importDataMenuItem')
       .addItem('Upload Sheet Data to KoboToolbox Survey', 'uploadDataMenuItem')
-      .addItem('Display Map', 'showMapMenuItem')
       .addToUi();
 }
 
 // Creates import dialog box
 function importDataMenuItem() {
-  var template = populateTemplate(HtmlService.createTemplateFromFile('ImportForm.html'));
+  var template = populateTemplateSheets(populateTemplateSurveys(HtmlService.createTemplateFromFile('ImportForm.html')));
   var html = template.evaluate().setHeight(400);
   SpreadsheetApp.getUi().showModalDialog(html, 'Import survey data from KoboToolbox');
 }
 
 // Creates upload dialog box
 function uploadDataMenuItem() {
-  var template = populateTemplate(HtmlService.createTemplateFromFile('UploadForm.html'));
+  var template = populateTemplateSheets(populateTemplateSurveys(HtmlService.createTemplateFromFile('UploadForm.html')));
   var html = template.evaluate();
   SpreadsheetApp.getUi().showModalDialog(html, 'Upload Sheet Data to KoboToolbox');
 }
 
-// Pushes sheet/survey lists onto a template
-function populateTemplate(template) {
+// Pushes sheet list onto a template
+function populateTemplateSheets(template) {
+  var ss = function(s){ return { name: s.getName(), isActive: s.getName() == SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getName() }; };
+  template.sheets = SpreadsheetApp.getActiveSpreadsheet().getSheets().map(ss);
+  return template;
+}
+
+// Pushes survey list onto a template
+function populateTemplateSurveys(template) {
   var config = PropertiesService.getScriptProperties().getProperties();
   var surveyList = KoboGet(config.baseUrl + '/api/v1/data');
   template.surveys = surveyList.map(function(s){ return { 'id': s['id'], 'name': s['title'], 'url': s['url'] }; });
-  template.sheets = SpreadsheetApp.getActiveSpreadsheet().getSheets().map(function(s){ return s.getName(); });
   return template;
 }
 
@@ -120,8 +125,7 @@ function getSheetMetadata(sheet, config) {
     return metadata;
   }
   
-  var headerRow = sheet.getRange(1, 1, 1, sheet.getLastColumn());
-  metadata['fields'] = headerRow.getValues()[0];
+  metadata['fields'] = getHeaderFields(sheet);
   metadata['pkIdx'] = metadata['fields'].indexOf(getPk(config));
   if (metadata['pkIdx'] < 0) {
     return null;
@@ -134,4 +138,10 @@ function getSheetMetadata(sheet, config) {
     metadata['pkValues'][values[i][metadata['pkIdx']]] = 1;
   }
   return metadata;
+}
+
+// Gets an array of the header field names
+function getHeaderFields(sheet) {
+  var headerRow = sheet.getRange(1, 1, 1, sheet.getLastColumn());
+  return headerRow.getValues()[0];
 }
