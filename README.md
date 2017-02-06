@@ -2,6 +2,8 @@
 
 This project demonstrates how to set up a Google Spreadsheet to sync data with KoboToolbox using the Kobo API. Data can be copied in both directions: Google sheet -> Kobo survey, and Kobo survey -> Google sheet.
 
+Disclaimer: this project is still being tested and should be considered experimental.
+
 ## Known Issues
 
 1. Support for OAuth2 authentication is not finished yet.

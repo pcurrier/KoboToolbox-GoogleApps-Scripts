@@ -1,7 +1,7 @@
 // Wraps different methods for authenticating with KoboToolbox.
 // (a little awkward because of javascript/google app constraints)
 function KoboToolbox() {
-  var config = PropertiesService.getScriptProperties().getProperties();
+  var config = PropertiesService.getDocumentProperties().getProperties();
   Logger.log(JSON.stringify(config));
   if (config.authMethod == 'token') {
     return KoboToolboxToken.init(config);

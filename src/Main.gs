@@ -15,7 +15,7 @@ var KOBO_PK_FIELD = '_id';
 
 // Setup and menu creation
 function KoboSetup(config) {
-  PropertiesService.getScriptProperties().setProperties(config);
+  PropertiesService.getDocumentProperties().setProperties(config);
   
   var ui = SpreadsheetApp.getUi();
   ui.createMenu('KoboToolbox')
@@ -47,7 +47,7 @@ function populateTemplateSheets(template) {
 
 // Pushes survey list onto a template
 function populateTemplateSurveys(template) {
-  var config = PropertiesService.getScriptProperties().getProperties();
+  var config = PropertiesService.getDocumentProperties().getProperties();
   var surveyList = KoboGet(config.baseUrl + '/api/v1/data');
   template.surveys = surveyList.map(function(s){ return { 'id': s['id'], 'name': s['title'], 'url': s['url'] }; });
   return template;
@@ -63,7 +63,7 @@ function getPk(config) {
 
 // Called by the submit button on InputForm: imports one or more Kobo surveys into the specified sheet
 function importData(sheetName, surveys) {
-  var config = PropertiesService.getScriptProperties().getProperties();
+  var config = PropertiesService.getDocumentProperties().getProperties();
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
   var sheetMetadata = getSheetMetadata(sheet, config);
   if (!sheetMetadata) {
@@ -96,7 +96,7 @@ function importData(sheetName, surveys) {
 
 // Called by the submit button on UploadForm: uploads a sheet's data into the specified survey
 function uploadData(sheetName, surveyId) {
-  var config = PropertiesService.getScriptProperties().getProperties();
+  var config = PropertiesService.getDocumentProperties().getProperties();
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
   var sheetMetadata = getSheetMetadata(sheet, config);
   if (!sheetMetadata) {
