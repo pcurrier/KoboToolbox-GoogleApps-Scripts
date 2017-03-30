@@ -13,11 +13,11 @@ Disclaimer: this project is still being tested and should be considered experime
 1. Copy all files in the src/ folder into a Google Apps Script project that is attached to a Google sheet (you do not need to edit these files)
 2. Copy the file demo/Code.gs into the project
 3. Edit the baseUrl configuration parameter in Code.gs, setting it to either:
-  * Humanitarian organizations: `https://kc.humanitarianresponse.info`
-  * Everyone else: `https://kc.kobotoolbox.org`
+   * Humanitarian organizations: `https://kc.humanitarianresponse.info`
+   * Everyone else: `https://kc.kobotoolbox.org`
 4. Pick an authentication method and follow the appropriate steps below. There are two available:
-  * Token-based authentication
-  * Basic authentication (not recommended, better to use token-based)
+   * Token-based authentication
+   * Basic authentication (not recommended, better to use token-based)
 
 The developer API token (or the username/password if you choose basic authentication) is hard-coded in Code.gs for the purposes of this demo. In production code, you would probably want to obtain the value in some other way (e.g. prompt the user for it).
 
@@ -69,11 +69,11 @@ Support for OAuth2 is a work in progress. (Current issue is that the token POST 
 
 1. Make sure the OAuth2 authentication example is uncommented in Code.gs; the other examples should be commented out
 2. In your google script project:
-  * In Resources->Libraries, find library 1B7FSrk5Zi6L1rSxxTDgDEUsPzlukDsi4KGuTMorsTQHhGBzBkMun4iDF (this is the Oauth2 library), and add the latest version
-  * In File->Project Properties, copy the value of SCRIPT_ID, which will be used below
+   * In Resources->Libraries, find library 1B7FSrk5Zi6L1rSxxTDgDEUsPzlukDsi4KGuTMorsTQHhGBzBkMun4iDF (this is the Oauth2 library), and add the latest version
+   * In File->Project Properties, copy the value of SCRIPT_ID, which will be used below
 3. Go to `KOBO_BASE_URL/o/applications/register/` to register your script and fill in the fields as follows:
-  * Name: choose any unique application name
-  * Client type: Confidential
-  * Authorization grant type: Authorization code
-  * Redirect URIs: `https://script.google.com/macros/d/<SCRIPT_ID>/usercallback`
+   * Name: choose any unique application name
+   * Client type: Confidential
+   * Authorization grant type: Authorization code
+   * Redirect URIs: `https://script.google.com/macros/d/<SCRIPT_ID>/usercallback`
 4. After registering the script, copy the values of the KOBO_CLIENT_ID and KOBO_CLIENT_SECRET, and paste them into the values of authClientId and authClientSecret in Code.gs
