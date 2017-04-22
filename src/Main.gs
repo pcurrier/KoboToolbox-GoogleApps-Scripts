@@ -18,10 +18,14 @@ function KoboSetup(config) {
   PropertiesService.getDocumentProperties().setProperties(config);
   
   var ui = SpreadsheetApp.getUi();
-  ui.createMenu('KoboToolbox')
-      .addItem('Import KoboToolbox Data into Sheet', 'importDataMenuItem')
-      .addItem('Upload Sheet Data to KoboToolbox Survey', 'uploadDataMenuItem')
-      .addToUi();
+  var menu = ui.createMenu('KoboToolbox');
+  if (config.showImportMenu) {
+    menu.addItem('Import KoboToolbox Data into Sheet', 'importDataMenuItem');
+  }
+  if (config.showUploadMenu) {
+    menu.addItem('Upload Sheet Data to KoboToolbox Survey', 'uploadDataMenuItem');
+  }
+  menu.addToUi();
 }
 
 // Creates import dialog box
