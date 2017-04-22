@@ -49,13 +49,14 @@ This script works for all form datatypes that I've encountered in the surveys I 
 
 ## Uploading Google sheet data to a Kobo survey
 
-1. Reload your google sheets document
-2. In the KoboToolbox menu, select "Upload Sheet Data to KoboToolbox Survey"
-3. In the sheet dropdown menu, select the sheet you want to upload
-4. In the survey dropdown menu, select the survey you want to load (the sheet must have the same field structure as the survey or you will get an error)
-5. Click upload
+1. Set `showUploadMenu` to true in Code.gs
+2. Reload your google sheets document
+3. In the KoboToolbox menu, select "Upload Sheet Data to KoboToolbox Survey"
+4. In the sheet dropdown menu, select the sheet you want to upload
+5. In the survey dropdown menu, select the survey you want to load (the sheet must have the same field structure as the survey or you will get an error)
+6. Click upload
 
-NOTE: if you run the upload multiple times using the same sheet/survey, you will load duplicate data into the survey. This is because the upload API ignores the `_id` field (and generates a new value for each row), so there is no effective way to avoid duplicates. Eventually if the API supports PUT operations on individual rows, perhaps this behavior could be improved.
+WARNING: upload data to the Kobo server at your own risk! If you run the upload multiple times using the same sheet/survey, you will load duplicate data into the survey. This is because the upload API ignores the `_id` field (and generates a new value for each row), so there is no effective way to avoid duplicates. Eventually if the API supports PUT (update) operations on individual rows, perhaps this behavior could be improved.
 
 ## Copying data from one Kobo survey to another
 
