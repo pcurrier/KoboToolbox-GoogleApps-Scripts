@@ -2,7 +2,6 @@
 // (a little awkward because of javascript/google app constraints)
 function KoboToolbox() {
   var config = PropertiesService.getDocumentProperties().getProperties();
-  Logger.log(JSON.stringify(config));
   if (config.authMethod == 'token') {
     return KoboToolboxToken.init(config);
   } else if (config.authMethod == 'oauth2') {

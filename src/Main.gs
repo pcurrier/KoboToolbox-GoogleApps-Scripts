@@ -108,16 +108,13 @@ function uploadData(sheetName, surveyId) {
   }
   
   var returnString = '';
-  var rowCount = 0;
   var survey = new Survey(surveyId, config.baseUrl, getPk(config));
-  var rowsUploaded = survey.upload(sheet, sheetMetadata);
-  if (rowsUploaded < 0) {
+  var rowsAffected = survey.upload(sheet, sheetMetadata);
+  if (rowsAffected.length == 0) {
     returnString = 'ERROR: Sheet ' + sheetName + ' could not be uploaded into survey ' + surveyId + '. Check that sheet and survey have identical field structures.';
   }
-  rowCount += rowsUploaded;
-  
   if (!returnString) {
-    returnString = 'Uploaded sheet containing ' + rowCount + ' new rows.';
+    returnString = 'Uploaded sheet with ' + rowsAffected[0] + ' new rows and ' + rowsAffected[1] + ' updated rows.';
   }
   return returnString;
 }

@@ -48,7 +48,7 @@ Survey.prototype = {
   // Upload a sheet's data to the survey
   upload: function(sheet, sheetMetadata) {
     if (!this.matchesSheet(sheetMetadata)) {
-      return -1;
+      return [];
     }
         
     var regex = /"/g;
@@ -72,13 +72,16 @@ Survey.prototype = {
       csvData += row;
     }
     
-    var count = 0;
+    var counts = [0, 0];
     var response = KoboUpload(this.baseUrl + '/api/v1/forms/' + this.id + '/csv_import', csvData);
     if (response['additions']) {
-      count = response['additions'];
+      counts[0] = response['additions'];
+    }
+    if (response['updates']) {
+      counts[1] = response['updates'];
     }
     
-    return count;
+    return counts;
   },
   
   // Takes the JSON survey row representation and creates an array representation for the google sheet
