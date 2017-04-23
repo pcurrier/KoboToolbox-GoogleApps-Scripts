@@ -35,6 +35,8 @@ Survey.prototype = {
     var sdlen = this.getData();
     for (var i = 0; i < sdlen; i++) {
       if (!this.surveyRowExistsInSheet(sheetMetadata, this.data[i])) {
+        // response doesn't contain it so add the _index (rows always come in _index order)
+        this.data[i]['_index'] = i + 1;
         var newRow = this.surveyRowToSheetRow(this.data[i]);
         var newRange = sheet.getRange(currentRow++, 1, 1, newRow.length);
         newRange.setNumberFormats(stringFormats);
