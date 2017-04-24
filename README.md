@@ -58,9 +58,9 @@ This script works for all form datatypes that I've encountered in the surveys I 
 5. In the survey dropdown menu, select the survey you want to load (the sheet must have the same field structure as the survey or you will get an error)
 6. Click upload
 
-The Kobo server uses the combination of `_id` and `_uuid` as a unique submission identifier. The `_uuid` is *not* stable across updates. This makes performing updates somewhat more complicated:
+The Kobo server uses the combination of `_id` and `_uuid` as a unique submission identifier. The `_uuid` is *not* stable across updates. This makes performing updates somewhat complicated:
 * If you upload a spreadsheet row whose `_id` and `_uuid` do not exist on the server, then a new submission will be inserted using the spreadsheet data.
-* If you upload a spreadsheet row whose `_id` and `_uuid` match a submission on the server, then that submission will be updated based on the spreadsheet contents. A new `_uuid` will be generated for the updated version of the submission. (The `_id` remains stable across updates.) So then immediately performing another upload with the original `_id/_uuid` will insert a new submission with a fresh `_id/_uuid`.
+* If you upload a spreadsheet row whose `_id` and `_uuid` match a submission on the server, then that submission will be updated based on the spreadsheet contents. A new `_uuid` will be generated for the updated version of the submission. (The `_id` remains stable across updates.) So then immediately performing another upload with the original `_id/_uuid` will insert a new submission with a fresh `_uuid`.
 * To perform multiple updates of a given submission, you will need to do fresh imports each time to pull down the current `_uuid` from the server.
 
 In short, be careful uploading data to a Kobo survey that already contains submissions. It is easy to unintentionally insert duplicate submissions.
