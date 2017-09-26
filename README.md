@@ -45,7 +45,7 @@ The result should be a sheet with the same data as would appear in an Excel file
 
 The first time you execute these steps, google will ask for permission to let the script access your spreadsheet data. Click continue/allow to grant permission.
 
-Once you have a sheet that contains survey data, you can run this procedure again to re-import surveys, and only rows that don't yet exist in the sheet will be imported. (The script does not attempt to update existing rows in the spreadsheet.) The `_id` field is used as the unique row identifier; to change this, you can edit the value of KOBO_PK_FIELD. If you ever try to import a survey with different fields than exist in your chosen sheet (based on the sheet's header row), you will get an error.
+If you re-run this process on a sheet that already contains Kobo survey data, it will append the rows at the end of the sheet each time.
 
 This script works for all form datatypes that I've encountered in the surveys I have access to; however there are probably other datatypes for which support will need to be added.
 

@@ -68,11 +68,6 @@ function getPk(config) {
 // Called by the submit button on InputForm: imports one or more Kobo surveys into the specified sheet
 function importData(sheetName, surveys) {
   var config = PropertiesService.getDocumentProperties().getProperties();
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
-  var sheetMetadata = getSheetMetadata(sheet, config);
-  if (!sheetMetadata) {
-    return 'ERROR: Target sheet ' + sheetName + ' does not contain index field: ' + getPk(config);
-  }
   
   // Avoid multiple simultaneous imports
   var lock = LockService.getScriptLock();
@@ -81,13 +76,13 @@ function importData(sheetName, surveys) {
   var returnString = '';
   var rowCount = 0;
   for (var i = 0; i < surveys.length; i++) {
-    var survey = new Survey(surveys[i]['id'], config.baseUrl, getPk(config));
-    var rowsImported = survey.import(sheet, sheetMetadata);
-    if (rowsImported < 0) {
-      returnString = 'ERROR: Survey ' + surveys[i]['name'] + ' could not be imported into sheet ' + sheetName + '. Check that sheet and survey have identical field structures.';
+    var survey = new Survey(surveys[i]['id'], sheetName, config.baseUrl, getPk(config));
+    var result = survey.import(sheetName);
+    if (result['error']) {
+      returnString = 'ERROR: ' + result['error'];
       break;
     }
-    rowCount += rowsImported;
+    rowCount += result['rows'];
   }
   
   if (!returnString) {
@@ -108,36 +103,24 @@ function uploadData(sheetName, surveyId) {
   }
   
   var returnString = '';
-  var survey = new Survey(surveyId, config.baseUrl, getPk(config));
-  var rowsAffected = survey.upload(sheet, sheetMetadata);
-  if (rowsAffected.length == 0) {
-    returnString = 'ERROR: Sheet ' + sheetName + ' could not be uploaded into survey ' + surveyId + '. Check that sheet and survey have identical field structures.';
+  var survey = new Survey(surveyId, sheetName, config.baseUrl, getPk(config));
+  var result = survey.upload(sheetName);
+  if (result['error']) {
+    returnString = 'ERROR: ' + result['error'];
   }
   if (!returnString) {
-    returnString = 'Uploaded sheet with ' + rowsAffected[0] + ' new rows and ' + rowsAffected[1] + ' updated rows.';
+    returnString = 'Uploaded sheet with ' + result['additions'] + ' new rows and ' + result['updates'] + ' updated rows.';
   }
   return returnString;
 }
 
 // Gets metadata (field info and primary key index, mainly) for a sheet
-function getSheetMetadata(sheet, config) {
+function getSheetMetadata(sheet) {
   var metadata = { 'fields': [], 'pkValues': {} };
   if (sheet.getLastColumn() == 0) {
     return metadata;
   }
-  
   metadata['fields'] = getHeaderFields(sheet);
-  metadata['pkIdx'] = metadata['fields'].indexOf(getPk(config));
-  if (metadata['pkIdx'] < 0) {
-    return null;
-  }
-  
-  // Build an index on the pk field, used to determine if new rows are already present
-  var dataRange = sheet.getDataRange();
-  var values = dataRange.getValues();
-  for (var i = 1; i < values.length; i++) {
-    metadata['pkValues'][values[i][metadata['pkIdx']]] = 1;
-  }
   return metadata;
 }
 
