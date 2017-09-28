@@ -74,7 +74,7 @@ FieldSet.prototype = {
       } else if (['__version__'].indexOf(child['name']) >= 0) {
         // special internal fields
         this.pushField(child['name']);
-      } else if (['integer','text','date','select one','photo','barcode','note'].indexOf(child['type']) >= 0) {
+      } else if (['integer','decimal','text','date','select one','photo','barcode','note','calculate'].indexOf(child['type']) >= 0) {
         // regular scalar values
         this.pushField(namePrefix + child['name']);
       } else if (child['type'] == 'geopoint') {
