@@ -132,7 +132,7 @@ FieldSet.prototype = {
         }
       }
       // Add last fields for nested groups
-      if (depth > 0 && c == (len - 1)) {
+      if (doCheck && depth > 0 && c == (len - 1)) {
         this.pushField('_index', idxFunc);
         var parentFunc = function(jsonRow, jsonValue) {
           jsonRow['_parent_table_name'] = that.parent.sheetName;
